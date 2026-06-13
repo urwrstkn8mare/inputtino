@@ -1,9 +1,10 @@
-use crate::{JoypadStickPosition, PS5Joypad, SwitchJoypad, XboxOneJoypad};
+use crate::{JoypadStickPosition, PS4Joypad, PS5Joypad, SwitchJoypad, XboxOneJoypad};
 
 /// A generic Joypad which exposes some common functionality of the underlying joypad.
 pub enum Joypad {
     Switch(SwitchJoypad),
     PS5(PS5Joypad),
+    PS4(PS4Joypad),
     XboxOne(XboxOneJoypad),
 }
 
@@ -21,6 +22,7 @@ impl Joypad {
         match self {
             Joypad::Switch(joypad) => joypad.set_pressed(buttons),
             Joypad::PS5(joypad) => joypad.set_pressed(buttons),
+            Joypad::PS4(joypad) => joypad.set_pressed(buttons),
             Joypad::XboxOne(joypad) => joypad.set_pressed(buttons),
         }
     }
@@ -36,6 +38,7 @@ impl Joypad {
         match self {
             Joypad::Switch(joypad) => joypad.set_triggers(left_trigger, right_trigger),
             Joypad::PS5(joypad) => joypad.set_triggers(left_trigger, right_trigger),
+            Joypad::PS4(joypad) => joypad.set_triggers(left_trigger, right_trigger),
             Joypad::XboxOne(joypad) => joypad.set_triggers(left_trigger, right_trigger),
         }
     }
@@ -51,6 +54,7 @@ impl Joypad {
         match self {
             Joypad::Switch(joypad) => joypad.set_stick(stick_type, x, y),
             Joypad::PS5(joypad) => joypad.set_stick(stick_type, x, y),
+            Joypad::PS4(joypad) => joypad.set_stick(stick_type, x, y),
             Joypad::XboxOne(joypad) => joypad.set_stick(stick_type, x, y),
         }
     }
@@ -68,6 +72,7 @@ impl Joypad {
         match self {
             Joypad::Switch(joypad) => joypad.set_on_rumble(on_rumble_fn),
             Joypad::PS5(joypad) => joypad.set_on_rumble(on_rumble_fn),
+            Joypad::PS4(joypad) => joypad.set_on_rumble(on_rumble_fn),
             Joypad::XboxOne(joypad) => joypad.set_on_rumble(on_rumble_fn),
         }
     }

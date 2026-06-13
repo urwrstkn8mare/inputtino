@@ -16,6 +16,9 @@ pub use joypad::Joypad;
 mod joypad_ps5;
 pub use joypad_ps5::PS5Joypad;
 
+mod joypad_ps4;
+pub use joypad_ps4::PS4Joypad;
+
 mod joypad_nintendo;
 pub use joypad_nintendo::SwitchJoypad;
 

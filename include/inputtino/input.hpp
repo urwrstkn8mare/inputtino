@@ -463,4 +463,81 @@ private:
 
   PS5Joypad(uint16_t vendor_id, std::array<unsigned char, 6> mac_address = generate_mac_address());
 };
+
+/**
+ * Emulated PlayStation 4 DualShock 4 joypad (USB).
+ *
+ * Unlike the DualSense, the DS4 has no haptics, so games drive its two rumble
+ * motors directly; forwarding those gives strong rumble on a streaming client.
+ * Supports rumble, lightbar LED, touchpad and motion. Adaptive triggers and the
+ * mic-mute button do not exist on this hardware and are therefore absent.
+ */
+class PS4Joypad : public Joypad {
+public:
+  static Result<PS4Joypad>
+  create(const DeviceDefinition &device = {
+             .name = "Wolf DualShock 4 (virtual) pad", .vendor_id = 0x054C, .product_id = 0x05C4, .version = 0x8111});
+  PS4Joypad(PS4Joypad &&j) noexcept : _state(nullptr) {
+    std::swap(j._state, _state);
+  }
+  ~PS4Joypad() override;
+
+  std::vector<std::string> get_nodes() const override;
+
+  std::string get_mac_address() const;
+
+  std::vector<std::string> get_sys_nodes() const;
+
+  void set_pressed_buttons(unsigned int newly_pressed) override;
+  void set_triggers(int16_t left, int16_t right) override;
+  void set_stick(STICK_POSITION stick_type, short x, short y) override;
+  void set_on_rumble(const std::function<void(int low_freq, int high_freq)> &callback);
+
+  static constexpr int touchpad_width = 1920;
+  static constexpr int touchpad_height = 942;
+  void place_finger(int finger_nr, uint16_t x, uint16_t y);
+  void release_finger(int finger_nr);
+
+  enum MOTION_TYPE : uint8_t {
+    ACCELERATION = 0x01,
+    GYROSCOPE = 0x02
+  };
+
+  /**
+   * Acceleration should report data in m/s^2 (inclusive of gravitational acceleration).
+   * Gyroscope should report data in deg/s.
+   *
+   * The x/y/z axis assignments follow SDL's convention documented here:
+   * https://github.com/libsdl-org/SDL/blob/96720f335002bef62115e39327940df454d78f6c/include/SDL3/SDL_sensor.h#L80-L124
+   */
+  void set_motion(MOTION_TYPE type, float x, float y, float z);
+
+  enum BATTERY_STATE : uint8_t {
+    BATTERY_DISCHARGING = 0x0,
+    BATTERY_CHARGHING = 0x1,
+    BATTERY_FULL = 0x2,
+    VOLTAGE_OR_TEMPERATURE_OUT_OF_RANGE = 0xA,
+    TEMPERATURE_ERROR = 0xB,
+    CHARGHING_ERROR = 0xF
+  };
+
+  void set_battery(BATTERY_STATE state, int percentage);
+
+  void set_on_led(const std::function<void(int r, int g, int b)> &callback);
+
+protected:
+  typedef struct PS4JoypadState PS4JoypadState;
+  std::shared_ptr<PS4JoypadState> _state;
+
+private:
+  std::thread _send_input_thread;
+
+  static std::array<unsigned char, 6> generate_mac_address() {
+    auto rand = std::bind(std::uniform_int_distribution<unsigned char>{0, 0xFF},
+                          std::default_random_engine{std::random_device()()});
+    return {rand(), rand(), rand(), rand(), rand(), rand()};
+  };
+
+  PS4Joypad(uint16_t vendor_id, std::array<unsigned char, 6> mac_address = generate_mac_address());
+};
 } // namespace inputtino

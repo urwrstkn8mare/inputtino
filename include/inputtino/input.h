@@ -317,6 +317,45 @@ LIBINPUTTINO_EXPORT void inputtino_joypad_ps5_set_on_trigger_effect(InputtinoPS5
 
 LIBINPUTTINO_EXPORT void inputtino_joypad_ps5_destroy(InputtinoPS5Joypad *joypad);
 
+/*
+ * PS4 Joypad (DualShock 4)
+ */
+
+struct InputtinoPS4Joypad;
+typedef struct InputtinoPS4Joypad InputtinoPS4Joypad;
+
+LIBINPUTTINO_EXPORT InputtinoPS4Joypad *inputtino_joypad_ps4_create(const InputtinoDeviceDefinition *device,
+                                                       const InputtinoErrorHandler *eh);
+
+LIBINPUTTINO_EXPORT char **inputtino_joypad_ps4_get_nodes(InputtinoPS4Joypad *joypad, int *num_nodes);
+
+LIBINPUTTINO_EXPORT void inputtino_joypad_ps4_set_pressed_buttons(InputtinoPS4Joypad *joypad, int newly_pressed);
+
+LIBINPUTTINO_EXPORT void inputtino_joypad_ps4_set_triggers(InputtinoPS4Joypad *joypad, short left_trigger, short right_trigger);
+
+LIBINPUTTINO_EXPORT void inputtino_joypad_ps4_set_stick(InputtinoPS4Joypad *joypad,
+                                           enum INPUTTINO_JOYPAD_STICK_POSITION stick_type,
+                                           short x,
+                                           short y);
+
+LIBINPUTTINO_EXPORT void
+inputtino_joypad_ps4_set_on_rumble(InputtinoPS4Joypad *joypad, InputtinoJoypadRumbleFn rumble_fn, void *user_data);
+
+LIBINPUTTINO_EXPORT void
+inputtino_joypad_ps4_place_finger(InputtinoPS4Joypad *joypad, int finger_nr, unsigned short x, unsigned short y);
+
+LIBINPUTTINO_EXPORT void inputtino_joypad_ps4_release_finger(InputtinoPS4Joypad *joypad, int finger_nr);
+
+LIBINPUTTINO_EXPORT void inputtino_joypad_ps4_set_motion(
+    InputtinoPS4Joypad *joypad, enum INPUTTINO_JOYPAD_MOTION_TYPE motion_type, float x, float y, float z);
+
+LIBINPUTTINO_EXPORT void
+inputtino_joypad_ps4_set_battery(InputtinoPS4Joypad *joypad, enum BATTERY_STATE battery_state, unsigned short level);
+
+LIBINPUTTINO_EXPORT void inputtino_joypad_ps4_set_on_led(InputtinoPS4Joypad *joypad, InputtinoJoypadLEDFn led_fn, void *user_data);
+
+LIBINPUTTINO_EXPORT void inputtino_joypad_ps4_destroy(InputtinoPS4Joypad *joypad);
+
 #ifdef __cplusplus
 } // extern "C"
 #endif
