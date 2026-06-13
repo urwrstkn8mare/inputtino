@@ -103,8 +103,8 @@ static void set_c_str(const std::string &str, unsigned char *c_str) {
 
 constexpr int UHID_POLL_TIMEOUT = 500; // ms
 
-inputtino::Result<Device> Device::create(const DeviceDefinition &definition,
-                                         const std::function<void(const uhid_event &ev, int fd)> &on_event) {
+inline inputtino::Result<Device> Device::create(const DeviceDefinition &definition,
+                                                const std::function<void(const uhid_event &ev, int fd)> &on_event) {
 
   int fd = open("/dev/uhid", O_RDWR | O_CLOEXEC);
   if (fd < 0) {
