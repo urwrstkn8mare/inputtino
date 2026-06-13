@@ -114,40 +114,40 @@ static constexpr unsigned char ds4_rdesc[] = {
  * Feature report payloads (each begins with its report id, mirroring the way
  * the DualSense blobs in ps5.hpp are stored).
  *
- * NOTE: the calibration values below are synthesised to be non-degenerate
- * (non-zero gyro speed and accelerometer ranges) so the kernel's probe-time
- * calibration parsing succeeds. They are NOT captured from real hardware, so
- * gyro/accel readings will be approximately—but not precisely—scaled. This does
- * not affect rumble, buttons, sticks or triggers. Replace with a real
- * `hid-recorder` capture for accurate motion.
+ * The calibration and firmware reports below are captured verbatim from a real
+ * DualShock 4 v2 over hidraw (HIDIOCGFEATURE), so the kernel's probe-time
+ * calibration parsing yields accurate gyro/accel scaling. The pairing report's
+ * MAC fields are deliberately NOT real: the kernel reads the controller MAC from
+ * bytes 1..6, which we overwrite at runtime with the per-pad address, and the
+ * host-MAC bytes are a placeholder so no real Bluetooth address is published.
  */
 static constexpr unsigned char ds4_calibration_info[] = {
     0x02,                                // report id
-    0x00, 0x00,                          // gyro_pitch_bias
-    0x00, 0x00,                          // gyro_yaw_bias
-    0x00, 0x00,                          // gyro_roll_bias
-    0x56, 0x03,                          // gyro_pitch_plus
-    0x56, 0x03,                          // gyro_pitch_minus
-    0x56, 0x03,                          // gyro_yaw_plus
-    0x56, 0x03,                          // gyro_yaw_minus
-    0x56, 0x03,                          // gyro_roll_plus
-    0x56, 0x03,                          // gyro_roll_minus
-    0x30, 0x0F,                          // gyro_speed_plus
-    0x30, 0x0F,                          // gyro_speed_minus
-    0x55, 0x20,                          // acc_x_plus
-    0x9D, 0xDF,                          // acc_x_minus
-    0x55, 0x20,                          // acc_y_plus
-    0x9D, 0xDF,                          // acc_y_minus
-    0x55, 0x20,                          // acc_z_plus
-    0x9D, 0xDF,                          // acc_z_minus
-    0x00, 0x00,                          // padding (to 37 bytes)
+    0x04, 0x00,                          // gyro_pitch_bias
+    0xfc, 0xff,                          // gyro_yaw_bias
+    0xff, 0xff,                          // gyro_roll_bias
+    0x1b, 0x23,                          // gyro_pitch_plus
+    0xed, 0xdc,                          // gyro_pitch_minus
+    0xad, 0x22,                          // gyro_yaw_plus
+    0x47, 0xdd,                          // gyro_yaw_minus
+    0x5b, 0x22,                          // gyro_roll_plus
+    0xa2, 0xdd,                          // gyro_roll_minus
+    0x1c, 0x02,                          // gyro_speed_plus
+    0x1c, 0x02,                          // gyro_speed_minus
+    0x3d, 0x1f,                          // acc_x_plus
+    0xec, 0xe0,                          // acc_x_minus
+    0xbe, 0x20,                          // acc_y_plus
+    0x85, 0xe0,                          // acc_y_minus
+    0xf0, 0x20,                          // acc_z_plus
+    0x46, 0xdf,                          // acc_z_minus
+    0x08, 0x00,                          // trailing (to 37 bytes)
 };
 
 static constexpr unsigned char ds4_firmware_info[] = {
-    0xA3, 0x4A, 0x75, 0x6C, 0x20, 0x20, 0x39, 0x20, 0x32, 0x30, 0x31, 0x33,
-    0x31, 0x36, 0x3A, 0x32, 0x37, 0x3A, 0x33, 0x34, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x01, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    0xa3, 0x4a, 0x75, 0x6e, 0x20, 0x20, 0x39, 0x20, 0x32, 0x30, 0x31, 0x37,
+    0x00, 0x00, 0x00, 0x00, 0x00, 0x31, 0x32, 0x3a, 0x33, 0x36, 0x3a, 0x34,
+    0x31, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x0c,
+    0xb4, 0x01, 0x00, 0x00, 0x00, 0x07, 0xa0, 0x10, 0x20, 0x00, 0xa0, 0x02,
     0x00,
 };
 
